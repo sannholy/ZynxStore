@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZynxStore - Top Up & Digital Payment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .payment-container {
+            background: #161b22;
+            width: 100%;
+            max-width: 480px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            border: 1px solid #30363d;
+        }
+
+        /* Header Premium dengan Tema Zynx (Cyan/Neon Blue) */
+        .brand-header {
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            color: #0d1117;
+            padding: 35px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .brand-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 10px rgba(0, 242, 254, 0.4);
+        }
+
+        .brand-header p {
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.85;
+            letter-spacing: 0.5px;
+        }
+
+        /* Badge Status Online */
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(13, 17, 23, 0.8);
+            color: #00f2fe;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            border: 1px solid #00f2fe;
+        }
+
+        /* Ringkasan Pesanan / Invoice */
+        .invoice-box {
+            padding: 22px 25px;
+            background: #1f242c;
+            border-bottom: 1px dashed #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .invoice-info h3 {
+            font-size: 14px;
+            color: #8b949e;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .invoice-info p {
+            font-size: 12px;
+            color: #58a6ff;
+            font-weight: 500;
+        }
+
+        .price-tag {
+            font-size: 22px;
+            font-weight: 800;
+            color: #58a6ff;
+            text-shadow: 0 0 10px rgba(88, 166, 255, 0.2);
+        }
+
+        /* Form Body */
+        .payment-body {
+            padding: 25px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #8b949e;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Input Form Detail Akun */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            color: #8b949e;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 12px 15px;
+            color: #c9d1d9;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #00f2fe;
+            box-shadow: 0 0 8px rgba(0, 242, 254, 0.2);
+        }
+
+        /* Pilihan Metode Pembayaran */
+        .method-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .method-item {
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #161b22;
+        }
+
+        .method-item:hover {
+            border-color: #58a6ff;
+            background: #1f242c;
+        }
+
+        /* Radio Input Styling */
+        .method-item input[type="radio"] {
+            margin-right: 15px;
+            accent-color: #00f2fe;
+            width: 19px;
+            height: 19px;
+            cursor: pointer;
+        }
+
+        .method-details {
+            flex-grow: 1;
+        }
+
+        .method-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #f0f6fc;
+        }
+
+        .method-desc {
+            font-size: 11px;
+            color: #8b949e;
+            margin-top: 2px;
+        }
+
+        /* State waktu Radio ke-check */
+        .method-item:has(input[type="radio"]:checked) {
+            border-color: #00f2fe;
+            background-color: rgba(0, 242, 254, 0.05);
+        }
+
+        /* Tombol Bayar Glow */
+        .btn-pay {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            color: #0d1117;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.2);
+        }
+
+        .btn-pay:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 242, 254, 0.4);
+            opacity: 0.95;
+        }
+
+        .btn-pay:active {
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        .payment-footer {
+            text-align: center;
+            padding: 18px;
+            font-size: 11px;
+            color: #484f58;
+            background: #0d1117;
+            border-top: 1px solid #30363d;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="payment-container">
+        <div class="brand-header">
+            <span class="status-badge">ONLINE</span>
+            <h1>ZYNXSTORE</h1>
+            <p>Secure Top Up & Digital Gateway</p>
+        </div>
+
+        <div class="invoice-box">
+            <div class="invoice-info">
+                <h3>Invoice #ZX-7729</h3>
+                <p>Paket: 1000 + 100 Diamonds</p>
+            </div>
+            <div class="price-tag">
+                Rp 145.000
+            </div>
+        </div>
+
+        <div class="payment-body">
+            <form id="zynxPaymentForm" onsubmit="prosesZynxPay(event)">
+                
+                <div class="input-group">
+                    <label for="userId">Masukkan User ID / Nomor WhatsApp</label>
+                    <input type="text" id="userId" placeholder="Contoh: 12345678 (2026) atau 0812xxx" required>
+                </div>
+
+                <div class="section-title">Metode Pembayaran</div>
+                
+                <div class="method-options">
+                    
+                    <label class="method-item">
+                        <input type="radio" name="zynx_method" value="QRIS" checked>
+                        <div class="method-details">
+                            <div class="method-name">QRIS / E-Wallet (Instan)</div>
+                            <div class="method-desc">DANA, OVO, GoPay, ShopeePay, LinkAja</div>
+                        </div>
+                    </label>
+
+                    <label class="method-item">
+                        <input type="radio" name="zynx_method" value="BCA_VA">
+                        <div class="method-details">
+                            <div class="method-name">BCA Virtual Account</div>
+                            <div class="method-desc">Dicek otomatis 24 jam</div>
+                        </div>
+                    </label>
+
+                    <label class="method-item">
+                        <input type="radio" name="zynx_method" value="MANDIRI_VA">
+                        <div class="method-details">
+                            <div class="method-name">Mandiri Virtual Account</div>
+                            <div class="method-desc">Proses verifikasi kurang dari 1 menit</div>
+                        </div>
+                    </label>
+
+                </div>
+
+                <button type="submit" class="btn-pay">Proses Pembayaran</button>
+            </form>
+        </div>
+
+        <div class="payment-footer">
+            &copy; 2026 ZynxStore by Zayn. All Rights Reserved.
+        </div>
+    </div>
+
+    <script>
+        function prosesZynxPay(event) {
+            event.preventDefault();
+            const targetId = document.getElementById('userId').value;
+            const metode = document.querySelector('input[name="zynx_method"]:checked').value;
+            
+            alert('Pesanan untuk ID/No ' + targetId + ' berhasil dicatat! Mengalihkan ke sistem pembayaran ' + metode + ' ZynxStore...');
+        }
+    </script>
+
+</body>
+</html>
